@@ -1,23 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float movementSpeed = 5.0f;
+    [SerializeField] float walkSpeed = 5.0f;
+    [SerializeField] float sprintSpeed = 15.0f;
     [SerializeField] float turnSpeed = 0.1f;
+    [SerializeField] float boostFOV = 30.0f;
 
+    [SerializeField] Text boostGaugeText;
+    [SerializeField] Slider boostGaugeSlider;
     [SerializeField] Rigidbody playerBody;
     [SerializeField] Transform cameraAxisY;
+    [SerializeField] Camera cam;
+
+    float movementSpeed;
 
     Vector2 movementInput;
 
     float turnSmoothVelocity;
 
+    float boostGauge;
+
+    public float boostCharge { set { boostGauge += value; } }
+
+    float defaultFOV;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        defaultFOV = cam.fieldOfView;
     }
 
     // Update is called once per frame
@@ -26,6 +40,8 @@ public class PlayerController : MonoBehaviour
         Inputs();
         RotatePlayer();
         SpeedControl();
+        SwitchSpeed();
+        UpdateText();
     }
 
     void FixedUpdate()
@@ -66,5 +82,31 @@ public class PlayerController : MonoBehaviour
             Vector3 limitedVelocity = flatVelocity.normalized * movementSpeed;
             playerBody.velocity = new Vector3(limitedVelocity.x, playerBody.velocity.y, limitedVelocity.z);
         }
+    }
+
+    void SwitchSpeed()
+    {
+        if (boostGauge > boostGaugeSlider.maxValue) boostGauge = boostGaugeSlider.maxValue;
+
+        if (0 < boostGauge && Input.GetKey(KeyCode.LeftShift) && movementInput.sqrMagnitude != 0.0f)
+        {
+            boostGauge -= 20.0f * Time.deltaTime;
+
+            movementSpeed = sprintSpeed;
+
+            if (cam.fieldOfView < defaultFOV + boostFOV) cam.fieldOfView += boostFOV * Time.deltaTime;
+        }
+        else
+        {
+            movementSpeed = walkSpeed;
+
+            if (cam.fieldOfView > defaultFOV) cam.fieldOfView -= boostFOV * Time.deltaTime;
+        }
+    }
+
+    void UpdateText()
+    {
+        boostGaugeText.text = " " + boostGauge.ToString();
+        boostGaugeSlider.value = boostGauge;
     }
 }

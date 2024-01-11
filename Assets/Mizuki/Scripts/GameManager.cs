@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VacuumController : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -14,13 +14,5 @@ public class VacuumController : MonoBehaviour
     void Update()
     {
         
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Garbage"))
-        {
-            other.gameObject.SetActive(false);
-        }
     }
 }
