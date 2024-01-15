@@ -1466,6 +1466,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97657bb15c40ee54abcd7d3f91f7038c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  remotecontroller: {fileID: 0}
+  player: {fileID: 0}
 --- !u!1001 &674676754
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2514,7 +2516,7 @@ GameObject:
   - component: {fileID: 1108880067}
   m_Layer: 0
   m_Name: a
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2601,7 +2603,7 @@ Transform:
   m_GameObject: {fileID: 1108880066}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.62, y: 0.34, z: 12.27}
+  m_LocalPosition: {x: -12.48, y: 0.34, z: 15.18}
   m_LocalScale: {x: 2, y: 0.25, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
