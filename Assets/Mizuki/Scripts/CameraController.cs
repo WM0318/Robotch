@@ -25,6 +25,7 @@ public class CameraController : MonoBehaviour
         Cursor.visible = false;
 
         transform.position = Vector3.zero;
+        transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
     // Update is called once per frame
