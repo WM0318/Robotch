@@ -10,18 +10,6 @@ public class GarbageController : MonoBehaviour
 
     float elapsedTime;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnTriggerStay(Collider other)
     {
         if(other.CompareTag("Vacuum"))
@@ -30,11 +18,11 @@ public class GarbageController : MonoBehaviour
 
             transform.position = Vector3.MoveTowards(transform.position, other.transform.position, Mathf.Pow(1.0f, elapsedTime) / vacuumPower);
 
-            float dist = Vector3.Distance(transform.position, other.transform.position);
-
-            if (-eraseRange < dist && dist < eraseRange) 
+            if (-eraseRange < Vector3.Distance(transform.position, other.transform.position) && Vector3.Distance(transform.position, other.transform.position) < eraseRange) 
             {
                 other.GetComponentInParent<PlayerController>().boostCharge = chargeBoost;
+
+                other.GetComponentInParent<GameManager>().CheckProgress();
 
                 gameObject.SetActive(false);
             }
