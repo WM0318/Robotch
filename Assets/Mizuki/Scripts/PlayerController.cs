@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -11,58 +10,79 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Status")]
+    [Header("Movement")]
     [Tooltip("歩行速度")]
     [SerializeField] float walkSpeed = 5.0f / 3.0f;
-    [Tooltip("疾走速度")]
-    [SerializeField] float sprintSpeed = 5.0f;
-    [Tooltip("ブーストの消費量")]
-    [SerializeField] float boostConsumption = 20.0f;
     [Tooltip("自機の回転速度")]
     [SerializeField] float turnSpeed = 0.1f;
     [Tooltip("接地判定用レイヤー")]
     [SerializeField] LayerMask groundLayer;
     [Tooltip("接地してる際の摩擦")]
     [SerializeField] float groundDrag = 3.0f;
+    Vector2 movementInput;
+    float movementSpeed;
+    float turnSmoothVelocity;
+    bool isGround;
+    const float CHECK_SPHERE_SCALE = 0.1f;
+
+    [Header("Boost")]
+    [Tooltip("ブースト速度")]
+    [SerializeField] float sprintSpeed = 5.0f;
+    [Tooltip("ブーストの消費量")]
+    [SerializeField] float boostConsumption = 20.0f;
+    bool isPressedBoost;
+    bool isBoost;
+    float boostGauge;
+    public float boostCharge { set { boostGauge += value; } }
+    public bool isBoosting { get { return isBoost; } }
+    const float MAX_BOOST_GAUGE = 100.0f;
+
+    [Header("Battery")]
+    [Tooltip("充電速度")]
+    [SerializeField] float chargeSpeed = 5.0f;
+    [Tooltip("バッテリー消費量")]
+    [SerializeField] float batteryConsumption = 2.0f;
+    [Tooltip("ブースト時のバッテリー消費量")]
+    [SerializeField] float boostingBatteryConsumption = 3.0f;
+    [Tooltip("充電器のレイヤー")]
+    [SerializeField] LayerMask chargerLayer;
+    float batteryGauge;
+    const float MAX_BATTERY_GAUGE = 100.0f;
+
+    [Header("Garbage")]
+    [Tooltip("ゴミタンクの容量")]
+    [SerializeField] float garbageCapacity = 55.0f;
+    [Tooltip("ゴミの廃棄速度")]
+    [SerializeField] float garbageDisposalSpeed = 6.0f;
+    [Tooltip("ゴミ箱のレイヤー")]
+    [SerializeField] LayerMask trashCanLayer;
+    float possessionGarbage;
+    public float addGarbage { set { possessionGarbage += value; } }
+    bool fullyGarbage;
+    public bool isFullyGarbage { get { return fullyGarbage; } }
 
     [Header("Reference")]
-    [Tooltip("自機の Rigidbody")]
-    [SerializeField] Rigidbody playerBody;
     [Tooltip("カメラが Y 軸で回転するための EmptyObject")]
     [SerializeField] Transform cameraAxisY;
-    [Tooltip("PlayerInput")]
-    [SerializeField] PlayerInput playerInput;
     [Tooltip("ブーストゲージ用テキスト")]
     [SerializeField] Text boostGaugeText;
     [Tooltip("ブーストゲージ用スライダー")]
     [SerializeField] Slider boostGaugeSlider;
-
-    // 入力用
-    Vector2 movementInput;
-    bool isPressedBoost;
-
-    // 移動とか用
-    float movementSpeed;
-    float boostGauge;
-
-    public float boostCharge { set { boostGauge += value; } }
-
-    bool isBoost;
-
-    public bool isBoosting { get { return isBoost; } }
-
-    // 接地判定用
-    bool isGround;
-    const float CHECK_SPHERE_SCALE = 0.1f;
-
-    // SmoothDampAngle用
-    float turnSmoothVelocity;
-
-    const float MAX_BOOST_GAUGE = 100.0f;
+    [Tooltip("バッテリーゲージ用テキスト")]
+    [SerializeField] Text batteryGaugeText;
+    [Tooltip("バッテリーゲージ用スライダー")]
+    [SerializeField] Slider batteryGaugeSlider;
+    [Tooltip("ゴミタンク用スライダー")]
+    [SerializeField] Slider garbageGaugeSlider;
+    Rigidbody playerBody;
+    PlayerInput playerInput;
 
     // 入力用
     void OnEnable()
     {
+        playerBody = GetComponent<Rigidbody>();
+        playerInput = GetComponent<PlayerInput>();
+
         playerInput.actions["Move"].performed += OnMove;
         playerInput.actions["Move"].canceled += OnMove;
 
@@ -98,7 +118,9 @@ public class PlayerController : MonoBehaviour
     {
         playerBody.freezeRotation = true; // Rigidbody の回転固定
         boostGaugeSlider.maxValue = MAX_BOOST_GAUGE;
-        
+        batteryGauge = MAX_BATTERY_GAUGE;
+        batteryGaugeSlider.maxValue = MAX_BATTERY_GAUGE;
+        garbageGaugeSlider.maxValue = garbageCapacity;
     }
 
     // Update is called once per frame
@@ -108,6 +130,8 @@ public class PlayerController : MonoBehaviour
         RotatePlayer();
         SpeedControl();
         Boost();
+        Battery();
+        Garbage();
     }
 
     void FixedUpdate()
@@ -183,7 +207,42 @@ public class PlayerController : MonoBehaviour
             isBoost = false;
         }
 
-        boostGaugeText.text = boostGauge.ToString("f1");
+        boostGaugeText.text = " " + boostGauge.ToString("f1");
         boostGaugeSlider.value = boostGauge;
+    }
+
+    void Battery()
+    {
+        if (Physics.CheckSphere(transform.position, transform.lossyScale.x / 2, chargerLayer) && batteryGauge < MAX_BATTERY_GAUGE)
+        {
+            batteryGauge += chargeSpeed * Time.deltaTime;
+        }
+        else
+        {
+            if (isBoost) batteryGauge -= boostingBatteryConsumption * Time.deltaTime;
+            else batteryGauge -= batteryConsumption * Time.deltaTime;
+        }
+
+        if (batteryGauge <= 0.0f)
+        {
+            GetComponent<GameManager>().GameOver();
+            GetComponent<PlayerController>().enabled = false;
+        }
+
+        batteryGaugeText.text = batteryGauge.ToString("f1");
+        batteryGaugeSlider.value = batteryGauge;
+    }
+
+    void Garbage()
+    {
+        if (possessionGarbage >= garbageCapacity) fullyGarbage = true;
+        else fullyGarbage = false;
+
+        if (Physics.CheckSphere(transform.position, transform.lossyScale.x / 2, trashCanLayer) && possessionGarbage > 0.0f)
+        {
+            possessionGarbage -= garbageDisposalSpeed * Time.deltaTime;
+        }
+
+        garbageGaugeSlider.value = possessionGarbage;
     }
 }

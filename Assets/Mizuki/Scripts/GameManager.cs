@@ -5,7 +5,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Reference")]
+    [Tooltip("進行状況テキスト")]
     [SerializeField] Text progressText;
+    [Tooltip("進行状況スライダー")]
     [SerializeField] Slider progressSlider;
 
     GameObject[] garbages;
@@ -27,12 +30,17 @@ public class GameManager : MonoBehaviour
     {
         cleaningProgress += 1;
 
-        progressText.text = (progressPerGarbage * cleaningProgress).ToString("f1") + " %";
+        progressText.text = " " + (progressPerGarbage * cleaningProgress).ToString("f1") + " %";
         progressSlider.value = progressPerGarbage * cleaningProgress;
 
         if (cleaningProgress >= garbages.Length)
         {
             Debug.Log("Clear!");
         }
+    }
+
+    public void GameOver()
+    {
+        Debug.Log("Game Over");
     }
 }
