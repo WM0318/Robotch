@@ -12245,7 +12245,7 @@ PrefabInstance:
       objectReference: {fileID: 1034304930}
     - target: {fileID: 5484711695798857857, guid: 8931ebe6f8e5ee842a4c9764cc5484ba, type: 3}
       propertyPath: walkSpeed
-      value: 2.5
+      value: 1.9
       objectReference: {fileID: 0}
     - target: {fileID: 5484711695798857857, guid: 8931ebe6f8e5ee842a4c9764cc5484ba, type: 3}
       propertyPath: cameraAxisY
