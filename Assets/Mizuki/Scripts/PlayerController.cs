@@ -64,8 +64,6 @@ public class PlayerController : MonoBehaviour
     [Header("Reference")]
     [Tooltip("カメラが Y 軸で回転するための EmptyObject")]
     [SerializeField] Transform cameraAxisY;
-    [Tooltip("ブーストゲージ用テキスト")]
-    [SerializeField] Text boostGaugeText;
     [Tooltip("ブーストゲージ用スライダー")]
     [SerializeField] Slider boostGaugeSlider;
     [Tooltip("バッテリーゲージ用テキスト")]
@@ -192,7 +190,9 @@ public class PlayerController : MonoBehaviour
     // ジャンプ用
     void Boost()
     {
-        if (boostGauge > 0.0f && isPressedBoost && movementInput != Vector2.zero)
+        if (boostGauge > MAX_BOOST_GAUGE) boostGauge = MAX_BOOST_GAUGE;
+
+        if (boostGauge > 0.1f && isPressedBoost && movementInput != Vector2.zero)
         {
             movementSpeed = sprintSpeed;
 
@@ -207,7 +207,6 @@ public class PlayerController : MonoBehaviour
             isBoost = false;
         }
 
-        boostGaugeText.text = " " + boostGauge.ToString("f1");
         boostGaugeSlider.value = boostGauge;
     }
 
