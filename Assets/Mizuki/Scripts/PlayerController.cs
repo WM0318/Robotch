@@ -46,6 +46,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float boostingBatteryConsumption = 3.0f;
     [Tooltip("充電器のレイヤー")]
     [SerializeField] LayerMask chargerLayer;
+    [Tooltip("低充電残量判定の数値")]
+    [SerializeField] float lowBatteryPowerNotificationLine = 30.0f;
     float batteryGauge;
     const float MAX_BATTERY_GAUGE = 100.0f;
 
@@ -72,6 +74,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Slider batteryGaugeSlider;
     [Tooltip("ゴミタンク用スライダー")]
     [SerializeField] Slider garbageGaugeSlider;
+    [Tooltip("充電の残量が少ないときの通知用の画像")]
+    [SerializeField] Image lowBatteryPowerNotification;
+    [Tooltip("充電中のパーティクル")]
+    [SerializeField] ParticleSystem chargeParticle;
+    [Tooltip("廃棄中のパーティクル")]
+    [SerializeField] ParticleSystem disposalParticle;
+    float notificationAnimTime;
+
     Rigidbody playerBody;
     PlayerInput playerInput;
 
@@ -215,11 +225,28 @@ public class PlayerController : MonoBehaviour
         if (Physics.CheckSphere(transform.position, transform.lossyScale.x / 2, chargerLayer) && batteryGauge < MAX_BATTERY_GAUGE)
         {
             batteryGauge += chargeSpeed * Time.deltaTime;
+
+            chargeParticle.gameObject.SetActive(true);
         }
         else
         {
             if (isBoost) batteryGauge -= boostingBatteryConsumption * Time.deltaTime;
             else batteryGauge -= batteryConsumption * Time.deltaTime;
+
+            chargeParticle.gameObject.SetActive(false);
+        }
+
+        if (batteryGauge <= lowBatteryPowerNotificationLine)
+        {
+            notificationAnimTime += Time.deltaTime;
+
+            lowBatteryPowerNotification.color = new Color(1.0f, 0.0f, 0.0f, (Mathf.Cos(notificationAnimTime) / 2) + 0.5f);
+        }
+        else
+        {
+            notificationAnimTime = Mathf.PI;
+
+            lowBatteryPowerNotification.color = Color.clear;
         }
 
         if (batteryGauge <= 0.0f)
@@ -240,7 +267,10 @@ public class PlayerController : MonoBehaviour
         if (Physics.CheckSphere(transform.position, transform.lossyScale.x / 2, trashCanLayer) && possessionGarbage > 0.0f)
         {
             possessionGarbage -= garbageDisposalSpeed * Time.deltaTime;
+
+            disposalParticle.gameObject.SetActive(true);
         }
+        else disposalParticle.gameObject.SetActive(false);
 
         garbageGaugeSlider.value = possessionGarbage;
     }
