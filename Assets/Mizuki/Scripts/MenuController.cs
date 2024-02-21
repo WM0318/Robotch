@@ -10,12 +10,21 @@ public class MenuController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("GameOver")) StartCoroutine(Back());
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    IEnumerator Back()
+    {
+        yield return new WaitForSeconds(10.0f);
+
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void PlayButton()

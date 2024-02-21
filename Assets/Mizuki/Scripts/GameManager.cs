@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            timerText.text = (Mathf.Floor(elapsedTime / 60)).ToString("00") + ":" + ((int)elapsedTime % 60).ToString("00");
+            timerText.text = (Mathf.Floor(elapsedTime / 60)).ToString("00") + ":" + (Mathf.Floor(elapsedTime) % 60).ToString("00");
         }
     }
 
