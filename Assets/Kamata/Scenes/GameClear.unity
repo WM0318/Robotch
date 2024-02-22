@@ -498,7 +498,7 @@ MonoBehaviour:
     _second: 40
   - _rank: D
     _color: {r: 1, g: 0.5019608, b: 0, a: 1}
-    _minute: 3
+    _minute: 114514
     _second: 0
   timeText: {fileID: 1906325569}
   rankText: {fileID: 1071993157}
@@ -817,7 +817,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.5019608, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -837,7 +837,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: S
+  m_Text: D
 --- !u!222 &1071993158
 CanvasRenderer:
   m_ObjectHideFlags: 0
