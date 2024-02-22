@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 /*
 注意点
@@ -41,6 +42,10 @@ public class CameraController : MonoBehaviour
     [SerializeField] Transform followTarget;
     [Tooltip("PlayerInput")]
     [SerializeField] PlayerInput playerInput;
+    [Tooltip("マウス感度調整用スライダー")]
+    [SerializeField] Slider mouseSensitivitySlider;
+    [Tooltip("スティック感度調整用スライダー")]
+    [SerializeField] Slider stickSensitivitySlider;
 
     // 内部処理用、現在のカメラ感度
     float cameraSensitivity;
@@ -83,6 +88,7 @@ public class CameraController : MonoBehaviour
     {
         CurrentDeviceCheck();
         CheckBoost();
+        SetSensitivity();
     }
 
     void LateUpdate()
@@ -154,5 +160,11 @@ public class CameraController : MonoBehaviour
             }
             else playerCamera.fieldOfView = defaultFOV;
         }
+    }
+
+    void SetSensitivity()
+    {
+        mouseSensitivity = mouseSensitivitySlider.value;
+        gamepadSensitivity = stickSensitivitySlider.value;
     }
 }

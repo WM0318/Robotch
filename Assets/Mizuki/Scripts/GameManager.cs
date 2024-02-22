@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 
 public class GameManager : MonoBehaviour
 {
@@ -24,6 +23,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject clearUI;
     [Tooltip("ゲームオーバー時に表示するUI")]
     [SerializeField] GameObject failureUI;
+    [Tooltip("効果音を鳴らすためのオーディオソース")]
+    [SerializeField] AudioSource source;
+    [Tooltip("ゴミを吸い込んだ時に再生されるSE")]
+    [SerializeField] AudioClip vacuumSoundEffect;
 
     GameObject[] garbages;
 
@@ -61,6 +64,8 @@ public class GameManager : MonoBehaviour
     public void CheckProgress()
     {
         cleaningProgress += 1;
+
+        source.PlayOneShot(vacuumSoundEffect);
 
         progressText.text = " " + (progressPerGarbage * cleaningProgress).ToString("f1") + " %";
         progressSlider.value = progressPerGarbage * cleaningProgress;

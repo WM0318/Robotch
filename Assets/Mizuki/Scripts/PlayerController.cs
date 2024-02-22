@@ -76,6 +76,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Slider garbageGaugeSlider;
     [Tooltip("充電の残量が少ないときの通知用の画像")]
     [SerializeField] Image lowBatteryPowerNotification;
+    [Tooltip("ゴミがいっぱいな時の通知用の画像")]
+    [SerializeField] Image fullyGarbageNotification;
     [Tooltip("充電中のパーティクル")]
     [SerializeField] ParticleSystem chargeParticle;
     [Tooltip("廃棄中のパーティクル")]
@@ -261,8 +263,18 @@ public class PlayerController : MonoBehaviour
 
     void Garbage()
     {
-        if (possessionGarbage >= garbageCapacity) fullyGarbage = true;
-        else fullyGarbage = false;
+        if (possessionGarbage >= garbageCapacity)
+        {
+            fullyGarbage = true;
+
+            fullyGarbageNotification.color = new Color(1.0f, 1.0f, 1.0f, 0.75f);
+        }
+        else
+        {
+            fullyGarbage = false;
+
+            fullyGarbageNotification.color = new Color(1.0f, 1.0f, 1.0f, 0.0f);
+        }
 
         if (Physics.CheckSphere(transform.position, transform.lossyScale.x / 2, trashCanLayer) && possessionGarbage > 0.0f)
         {
